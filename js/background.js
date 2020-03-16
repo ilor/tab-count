@@ -33,6 +33,20 @@ function displayResults(window_list) {
   localStorage["windowsCount"] = window_list.length;
   localStorage["allWindowsTabsCount"] = allWindowsTabCount;
   updateBadgeText();
+  let now = Date.now();
+  let epochDays = String(Math.floor(now / 24 / 60 / 60 / 1000));
+  chrome.storage.local.get(epochDays, function(result) {
+    item = result[epochDays];
+    if (typeof item == 'undefined' || item == null) {
+      item = [];
+    }
+    item.push([now, allWindowsTabCount]);
+    toSet = {};
+    toSet[epochDays] = item;
+    chrome.storage.local.set(toSet, function () {
+      console.log(chrome.runtime.lastError);
+    });
+  });
 }
 
 function registerTabDedupeHandler() {
